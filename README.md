@@ -23,18 +23,28 @@ A Java Timefold and Bootstrap employee schedule planner with a simple React fron
 
 ## Quick Start with Docker
 
-1. Clone the repository:
+**Note**: The Docker setup requires pre-built artifacts. Build the backend and frontend locally first:
+
 ```bash
-git clone <repository-url>
-cd employee_time_planner
+# Build backend
+cd backend
+mvn clean package -DskipTests
+cd ..
+
+# Build frontend
+cd frontend
+npm install
+npm run build
+cd ..
 ```
 
-2. Build and run with Docker Compose:
+Then start with Docker Compose:
+
 ```bash
 docker-compose up --build
 ```
 
-3. Access the application:
+Access the application:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8080/api
 
