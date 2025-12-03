@@ -1,6 +1,9 @@
 package com.example.scheduler.domain;
 
+import ai.timefold.solver.core.api.domain.lookup.PlanningId;
+
 public class Employee {
+    @PlanningId
     private String id;
     private String name;
 

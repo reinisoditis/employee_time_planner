@@ -1,12 +1,14 @@
 package com.example.scheduler.domain;
 
 import ai.timefold.solver.core.api.domain.entity.PlanningEntity;
+import ai.timefold.solver.core.api.domain.lookup.PlanningId;
 import ai.timefold.solver.core.api.domain.variable.PlanningVariable;
 
 import java.time.LocalDateTime;
 
 @PlanningEntity
 public class Shift {
+    @PlanningId
     private String id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
