@@ -4,6 +4,7 @@ import com.example.scheduler.domain.Employee;
 import com.example.scheduler.domain.Schedule;
 import com.example.scheduler.domain.Shift;
 import com.example.scheduler.service.ScheduleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,13 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
-
-    public ScheduleController(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
-    }
 
     @GetMapping("/employees")
     public List<Employee> getEmployees() {

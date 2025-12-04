@@ -5,6 +5,8 @@ import ai.timefold.solver.core.api.solver.SolverManager;
 import com.example.scheduler.domain.Employee;
 import com.example.scheduler.domain.Schedule;
 import com.example.scheduler.domain.Shift;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,17 +16,14 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
 
     private final SolverManager<Schedule, UUID> solverManager;
     private List<Employee> employees = new ArrayList<>();
     private List<Shift> shifts = new ArrayList<>();
 
-    public ScheduleService(SolverManager<Schedule, UUID> solverManager) {
-        this.solverManager = solverManager;
-        initializeSampleData();
-    }
-
+    @PostConstruct
     private void initializeSampleData() {
         // Add sample employees
         employees.add(new Employee("1", "Alice"));
