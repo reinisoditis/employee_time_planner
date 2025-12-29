@@ -23,9 +23,11 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 noTwoShiftsSameDay(constraintFactory),                 // H2
                 maxWorkDaysPerWeek(constraintFactory),                 // H3
                 noWorkDuringUnavailability(constraintFactory),         // H4
+                noDuplicateAssignmentSameShift(constraintFactory),
 
                 // Soft constraints (P1-P4) with varying weights α
                 evenShiftDistribution(constraintFactory),              // P1: α1 = 100
+                avoidUnusedEmployees(constraintFactory),
                 weekendDayOff(constraintFactory),                      // P2: α2 = 50
                 noMorningAfterEvening(constraintFactory),              // P3: α3 = 30
                 respectShiftPreferences(constraintFactory)             // P4: α4 = 20
@@ -109,6 +111,22 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 .asConstraint("H4: No work during unavailability");
     }
 
+    private Constraint noDuplicateAssignmentSameShift(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEachUniquePair(
+                        ShiftAssignment.class,
+                        Joiners.equal(ShiftAssignment::getEmployee),
+                        Joiners.equal(ShiftAssignment::getShift)
+                )
+                .filter((a1, a2) ->
+                        a1.getEmployee() != null &&
+                                a1.getShift() != null &&
+                                a2.getEmployee() != null &&
+                                a2.getShift() != null)
+                .penalize(HardSoftScore.ONE_HARD, (a1,a2) -> 10000)
+                .asConstraint("H?: No duplicate assignment to same shift");
+    }
+
     // ==================== SOFT CONSTRAINTS ====================
 
     /**
@@ -127,6 +145,15 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                             return (int) (deviation * deviation * 100);
                         })
                 .asConstraint("P1: Even shift distribution");
+    }
+
+    private Constraint avoidUnusedEmployees(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(Employee.class)
+                .ifNotExists(ShiftAssignment.class,
+                        Joiners.equal(e -> e, ShiftAssignment::getEmployee))
+                .penalize(HardSoftScore.ONE_SOFT, e -> 100)
+                .asConstraint("Avoid unused employees");
     }
 
     /**
@@ -194,7 +221,7 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 .penalize(HardSoftScore.ONE_SOFT,
                         assignment -> {
                             Employee employee = assignment.getEmployee();
-                            if (employee.getShiftTypePreferences() == null) {
+                            if (employee.getShiftTypePreferences().isEmpty()) {
                                 return 0;
                             }
                             Double preference = employee.getShiftTypePreferences()

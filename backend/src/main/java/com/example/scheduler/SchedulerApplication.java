@@ -1,13 +1,16 @@
 package com.example.scheduler;
 
+import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.Solver;
 import ai.timefold.solver.core.api.solver.SolverFactory;
 import ai.timefold.solver.core.config.solver.SolverConfig;
+import ai.timefold.solver.core.api.solver.SolutionManager;
 import com.example.scheduler.domain.Employee;
 import com.example.scheduler.domain.Schedule;
 import com.example.scheduler.domain.Shift;
 import com.example.scheduler.domain.ShiftAssignment;
 import com.example.scheduler.solver.ScheduleConstraintProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //@SpringBootApplication
+@Slf4j
 public class SchedulerApplication {
 
     public static void main(String[] args) {
@@ -44,6 +48,10 @@ public class SchedulerApplication {
 
         System.out.println("Solving... (max 10 seconds)\n");
         Schedule solution = solver.solve(problem);
+
+
+        SolutionManager<Schedule, HardSoftScore> solutionManager = SolutionManager.create(solverFactory);
+        log.info(solutionManager.explain(solution).getSummary());
 
         printSolution(solution);
     }
