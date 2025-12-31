@@ -18,19 +18,19 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[] {
-                // Hard constraints (H1-H4) with weight β = 10000
+                // Hard constraints (H1-H5) with weight β = 10000
                 minimumEmployeesPerShift(constraintFactory),           // H1
                 noTwoShiftsSameDay(constraintFactory),                 // H2
                 maxWorkDaysPerWeek(constraintFactory),                 // H3
                 noWorkDuringUnavailability(constraintFactory),         // H4
-                noDuplicateAssignmentSameShift(constraintFactory),
+                noDuplicateAssignmentSameShift(constraintFactory),     // H5
 
-                // Soft constraints (P1-P4) with varying weights α
+                // Soft constraints (P1-P5) with varying weights α
                 evenShiftDistribution(constraintFactory),              // P1: α1 = 100
-                avoidUnusedEmployees(constraintFactory),
                 weekendDayOff(constraintFactory),                      // P2: α2 = 50
                 noMorningAfterEvening(constraintFactory),              // P3: α3 = 30
-                respectShiftPreferences(constraintFactory)             // P4: α4 = 20
+                respectShiftPreferences(constraintFactory),            // P4: α4 = 20
+                avoidUnusedEmployees(constraintFactory),               // P5: a5 = 100
         };
     }
 
@@ -110,7 +110,10 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 .penalize(HardSoftScore.ONE_HARD, assignment -> 10000)
                 .asConstraint("H4: No work during unavailability");
     }
-
+    /**
+     * H5: No duplicate assignment of employee for the same shift
+     * Penalty: 10000 per violation
+     */
     private Constraint noDuplicateAssignmentSameShift(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEachUniquePair(
@@ -124,7 +127,7 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                                 a2.getEmployee() != null &&
                                 a2.getShift() != null)
                 .penalize(HardSoftScore.ONE_HARD, (a1,a2) -> 10000)
-                .asConstraint("H?: No duplicate assignment to same shift");
+                .asConstraint("H5: No duplicate assignment to same shift");
     }
 
     // ==================== SOFT CONSTRAINTS ====================
@@ -147,14 +150,7 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 .asConstraint("P1: Even shift distribution");
     }
 
-    private Constraint avoidUnusedEmployees(ConstraintFactory constraintFactory) {
-        return constraintFactory
-                .forEach(Employee.class)
-                .ifNotExists(ShiftAssignment.class,
-                        Joiners.equal(e -> e, ShiftAssignment::getEmployee))
-                .penalize(HardSoftScore.ONE_SOFT, e -> 100)
-                .asConstraint("Avoid unused employees");
-    }
+
 
     /**
      * P2: Respect employee's weekend day off preference
@@ -229,6 +225,19 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                             return (int) ((1.0 - preference) * 20);
                         })
                 .asConstraint("P4: Respect shift preferences");
+    }
+
+    /**
+     * P5: Avoid not using all the employees for the schedule
+     * Penalty: 100 per violation
+     */
+    private Constraint avoidUnusedEmployees(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .forEach(Employee.class)
+                .ifNotExists(ShiftAssignment.class,
+                        Joiners.equal(e -> e, ShiftAssignment::getEmployee))
+                .penalize(HardSoftScore.ONE_SOFT, e -> 100)
+                .asConstraint("P5: Avoid unused employees");
     }
 
     // ==================== HELPER METHODS ====================
