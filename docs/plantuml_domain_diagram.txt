@@ -1,0 +1,54 @@
+'Lai skatītu diagrammu izmantot: https://www.plantuml.com/plantuml/uml/SyfFKj2rKt3CoKnELR1Io4ZDoSa700001
+
+@startuml
+skinparam classAttributeIconSize 0
+
+class Schedule <<solution>>
+class ShiftAssignment 
+class Employee 
+class Shift 
+
+' ==========================
+' KLASES
+' ==========================
+
+class Employee {
+  string : name
+  int : maxWorkingDays
+  Set<LocalDate> : unavailableDates
+  Map<String, Double> : shiftTypePreferences
+  boolean : wantsWeekendDayOff
+}
+
+class Shift {
+  LocalDateTime : startTime
+  LocalDateTime : endTime
+  String : shiftType
+}
+
+class ShiftAssignment {
+  Shift : shift
+  Employee : employee
+  getDate()
+  getShiftType()
+}
+
+class Schedule {
+  ArrayList<Employee> employees
+  ArrayList<Shift> shifts
+  ArrayList<ShiftAssignment> shiftAssignments
+  HardSoftScore score
+}
+
+' ==========================
+' ATTIECĪBAS
+' ==========================
+
+' Schedule satur domēnu
+Schedule "1" o-- "*" Employee
+Schedule "1" o-- "*" ShiftAssignment
+
+' ShiftAssignment – plānošanas entīte ar mainīgo
+ShiftAssignment "*" --> "1" Shift
+ShiftAssignment "*" --> "1" Employee
+@enduml
