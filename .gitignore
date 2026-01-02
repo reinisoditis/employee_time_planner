@@ -36,3 +36,4 @@ frontend/package-lock.json
 .idea/
 .vscode/
 *.iml
+.DS_Store
