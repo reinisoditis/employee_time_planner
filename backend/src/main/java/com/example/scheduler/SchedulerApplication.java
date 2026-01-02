@@ -43,16 +43,10 @@ public class SchedulerApplication {
         Schedule problem = loadScheduleFromJson(jsonFilePath);
         printProblemDetails(problem);
 
-        SolverConfig solverConfig = new SolverConfig()
-                .withSolutionClass(Schedule.class)
-                .withEntityClasses(ShiftAssignment.class)
-                .withConstraintProviderClass(ScheduleConstraintProvider.class)
-                .withTerminationSpentLimit(Duration.ofSeconds(10));
-
-        SolverFactory<Schedule> solverFactory = SolverFactory.create(solverConfig);
+        SolverFactory<Schedule> solverFactory = SolverFactory.createFromXmlResource("solverConfig.xml");
         Solver<Schedule> solver = solverFactory.buildSolver();
 
-        System.out.println("Solving... (max 10 seconds)\n");
+        System.out.println("Solving... (max 30 seconds)\n");
         Schedule solution = solver.solve(problem);
 
         SolutionManager<Schedule, HardSoftScore> solutionManager = SolutionManager.create(solverFactory);

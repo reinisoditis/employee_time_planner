@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver xmlns="https://timefold.ai/xsd/solver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://timefold.ai/xsd/solver https://timefold.ai/xsd/solver/solver.xsd">
+
+    <!-- Solution and entity classes -->
+    <solutionClass>com.example.scheduler.domain.Schedule</solutionClass>
+    <entityClass>com.example.scheduler.domain.ShiftAssignment</entityClass>
+
+    <!-- Score configuration -->
+    <scoreDirectorFactory>
+        <constraintProviderClass>com.example.scheduler.solver.ScheduleConstraintProvider</constraintProviderClass>
+    </scoreDirectorFactory>
+
+    <!-- Termination -->
+    <termination>
+        <secondsSpentLimit>30</secondsSpentLimit>
+        <unimprovedSecondsSpentLimit>5</unimprovedSecondsSpentLimit>
+    </termination>
+
+    <!-- Phase configuration -->
+    <constructionHeuristic>
+        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
+    </constructionHeuristic>
+
+    <localSearch>
+        <acceptor>
+            <entityTabuSize>7</entityTabuSize>
+        </acceptor>
+        <forager>
+            <acceptedCountLimit>1000</acceptedCountLimit>
+        </forager>
+    </localSearch>
+
+</solver>
