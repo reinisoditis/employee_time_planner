@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark xmlns="https://timefold.ai/xsd/benchmark"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://timefold.ai/xsd/benchmark https://timefold.ai/xsd/benchmark/benchmark.xsd">
+
+    <benchmarkDirectory>target/benchmark</benchmarkDirectory>
+    <parallelBenchmarkCount>AUTO</parallelBenchmarkCount>
+
+    <inheritedSolverBenchmark>
+        <solver>
+            <solutionClass>com.example.scheduler.domain.Schedule</solutionClass>
+            <entityClass>com.example.scheduler.domain.ShiftAssignment</entityClass>
+            <scoreDirectorFactory>
+                <constraintProviderClass>com.example.scheduler.solver.ScheduleConstraintProvider</constraintProviderClass>
+            </scoreDirectorFactory>
+            <termination>
+                <secondsSpentLimit>60</secondsSpentLimit> <!-- Longer runtime -->
+            </termination>
+        </solver>
+    </inheritedSolverBenchmark>
+
+    <!-- Baseline winner -->
+    <solverBenchmark>
+        <name>Default_Config</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch/>
+        </solver>
+    </solverBenchmark>
+
+    <!-- Test different Tabu sizes -->
+    <solverBenchmark>
+        <name>Tabu_Size_5</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch>
+                <acceptor>
+                    <entityTabuSize>5</entityTabuSize>
+                </acceptor>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+
+    <solverBenchmark>
+        <name>Tabu_Size_10</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch>
+                <acceptor>
+                    <entityTabuSize>10</entityTabuSize>
+                </acceptor>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+
+    <solverBenchmark>
+        <name>Tabu_Size_20</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch>
+                <acceptor>
+                    <entityTabuSize>20</entityTabuSize>
+                </acceptor>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+
+    <!-- Test Simulated Annealing -->
+    <solverBenchmark>
+        <name>Simulated_Annealing</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch>
+                <acceptor>
+                    <simulatedAnnealingStartingTemperature>0hard/100soft</simulatedAnnealingStartingTemperature>
+                </acceptor>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+
+    <!-- Test combined acceptors -->
+    <solverBenchmark>
+        <name>Tabu_Plus_SimAnneal</name>
+        <solver>
+            <constructionHeuristic/>
+            <localSearch>
+                <acceptor>
+                    <entityTabuSize>7</entityTabuSize>
+                    <simulatedAnnealingStartingTemperature>0hard/50soft</simulatedAnnealingStartingTemperature>
+                </acceptor>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+</plannerBenchmark>

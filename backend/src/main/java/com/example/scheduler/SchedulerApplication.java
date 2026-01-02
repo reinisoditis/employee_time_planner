@@ -1,5 +1,7 @@
 package com.example.scheduler;
 
+import ai.timefold.solver.benchmark.api.PlannerBenchmark;
+import ai.timefold.solver.benchmark.api.PlannerBenchmarkFactory;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.Solver;
 import ai.timefold.solver.core.api.solver.SolverFactory;
@@ -31,10 +33,12 @@ public class SchedulerApplication {
 
     public static void main(String[] args) throws IOException {
         // Generate test data JSON files
-        generateTestDataJsonFiles();
+        //generateTestDataJsonFiles();
 
         // Run Timefold optimizer test with JSON input
-        runTimefoldTest("data/medium-schedule.json");
+        //runTimefoldTest("data/medium-schedule.json");
+
+        runBenchmark();
     }
 
     private static void runTimefoldTest(String jsonFilePath) throws IOException {
@@ -54,6 +58,26 @@ public class SchedulerApplication {
 
         printSolution(solution);
     }
+
+    private static void runBenchmark() throws IOException {
+        System.out.println("=== Starting Timefold Benchmark ===\n");
+
+        // Load problem datasets
+        List<Schedule> problemList = new ArrayList<>();
+        problemList.add(loadScheduleFromJson("data/small-schedule.json"));
+        problemList.add(loadScheduleFromJson("data/medium-schedule.json"));
+        problemList.add(loadScheduleFromJson("data/large-schedule.json"));
+
+        // Create and run benchmark
+        PlannerBenchmarkFactory benchmarkFactory =
+                PlannerBenchmarkFactory.createFromXmlResource("benchmarkConfig.xml");
+        PlannerBenchmark benchmark = benchmarkFactory.buildPlannerBenchmark(
+                problemList.toArray(new Schedule[0])
+        );
+
+        benchmark.benchmarkAndShowReportInBrowser();
+    }
+
 
     private static Schedule loadScheduleFromJson(String filePath) throws IOException {
         File file = new File(filePath);

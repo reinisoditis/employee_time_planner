@@ -39,6 +39,13 @@
             <version>${timefold.version}</version>
         </dependency>
 
+        <!-- Timefold Benchmark -->
+        <dependency>
+            <groupId>ai.timefold.solver</groupId>
+            <artifactId>timefold-solver-benchmark</artifactId>
+            <version>${timefold.version}</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
