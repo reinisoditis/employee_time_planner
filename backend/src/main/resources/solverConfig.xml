@@ -1,34 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<solver xmlns="https://timefold.ai/xsd/solver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<solver xmlns="https://timefold.ai/xsd/solver"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://timefold.ai/xsd/solver https://timefold.ai/xsd/solver/solver.xsd">
 
-    <!-- Solution and entity classes -->
+    <!-- Env -->
+    <environmentMode>FAST_ASSERT</environmentMode>
+
+    <!-- Domain -->
     <solutionClass>com.example.scheduler.domain.Schedule</solutionClass>
     <entityClass>com.example.scheduler.domain.ShiftAssignment</entityClass>
 
-    <!-- Score configuration -->
+    <!-- Constraints -->
     <scoreDirectorFactory>
         <constraintProviderClass>com.example.scheduler.solver.ScheduleConstraintProvider</constraintProviderClass>
     </scoreDirectorFactory>
 
     <!-- Termination -->
     <termination>
-        <secondsSpentLimit>30</secondsSpentLimit>
-        <unimprovedSecondsSpentLimit>5</unimprovedSecondsSpentLimit>
+        <secondsSpentLimit>60</secondsSpentLimit>
     </termination>
 
-    <!-- Phase configuration -->
-    <constructionHeuristic>
-        <constructionHeuristicType>FIRST_FIT</constructionHeuristicType>
-    </constructionHeuristic>
+    <!-- Construction heuristic -->
+    <constructionHeuristic/>
 
+    <!-- Local Searchc -->
     <localSearch>
         <acceptor>
-            <entityTabuSize>7</entityTabuSize>
+            <entityTabuSize>10</entityTabuSize>
         </acceptor>
-        <forager>
-            <acceptedCountLimit>1000</acceptedCountLimit>
-        </forager>
     </localSearch>
-
 </solver>
