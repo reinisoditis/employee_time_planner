@@ -9,6 +9,7 @@ import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ai.timefold.solver.core.api.solver.SolverStatus;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Schedule {
 
+    SolverStatus solverStatus;
     @ProblemFactCollectionProperty
     @ValueRangeProvider
     private List<Employee> employees;
