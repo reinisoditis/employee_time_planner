@@ -80,10 +80,10 @@ function Home() {
   return (
     <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center">
       <div className="w-full max-w-3xl">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">Schedule jobs</h1>
+        <h1 className="text-3xl font-bold mb-4 text-gray-900">Employee time planner</h1>
 
         <section className="mb-6 w-full bg-white p-4 rounded shadow">
-            <label htmlFor="fileUpload" className="block text-sm font-medium text-gray-700 mb-2">Upload JSON schedule:</label>
+            <label htmlFor="fileUpload" className="block text-sm font-medium text-gray-700 mb-2">Upload JSON schema:</label>
             <input
               id="fileUpload"
               type="file"
@@ -109,15 +109,10 @@ function Home() {
             const path = `/jobs/${encodeURIComponent(item)}`
             const schedulePath = `/jobs/${encodeURIComponent(item)}/schedule`
             return (
-                <>
-                    <li key={item} className="p-3">
-                        <Link to={path} className="text-blue-600 hover:underline">{item}</Link>
-                    </li>
-
-                    <li key={item + '-schedule'} className="p-3">
-                        <Link to={schedulePath} className="text-green-600 hover:underline">Schedule for {item}</Link>
-                    </li>
-                </>
+                <li key={item} className="p-3 flex">
+                    <Link to={path} className="text-blue-600 hover:underline grow">{item}</Link>
+                    <Link to={schedulePath} className="text-green-600 hover:underline">Timetable</Link>
+                </li>
             )
           })}
         </ul>

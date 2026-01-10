@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { BACKEND_API_ENDPOINTS } from '../config/api';
 
 type Employee = {
@@ -182,6 +183,11 @@ export default function Schedule({
 
     return (
         <div className="p-3 font-sans">
+            <div className="items-center gap-3 mb-4">
+                <h1 className="text-3xl font-bold">Schedule timetable</h1>
+                <Link to="/" className="text-blue-600 hover:underline">Home</Link>
+            </div>
+            
             <div className="flex gap-2 mb-3 items-center">
                 <button className="px-2.5 py-1.5 cursor-pointer" onClick={prevWeek}>
                     ← Prev

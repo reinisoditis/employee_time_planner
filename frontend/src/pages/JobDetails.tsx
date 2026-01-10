@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BACKEND_API_ENDPOINTS } from '../config/api';
+import { Link } from "react-router-dom";
 
 type Constraint = { name: string; score: string };
 type Analysis = { score: string; constraints: Constraint[] };
@@ -100,7 +101,7 @@ function JobDetails({ jobId }: { jobId?: string }) {
         let intervalId: number | null = null;
 
         async function fetchData() {
-            if (!isMounted) return;
+            if (!isMounted || !jobId) return;
             
             try {
                 setError(null);
@@ -122,7 +123,6 @@ function JobDetails({ jobId }: { jobId?: string }) {
                             return null;
                         }
                     }
-                    // If server returned HTML (likely an error page), log it and return null
                     try {
                         const text = await res.text();
                         console.error("Expected JSON but got:", text);
@@ -144,13 +144,11 @@ function JobDetails({ jobId }: { jobId?: string }) {
                 setSolution(solutionData ?? { employees: [], shifts: [], shiftAssignments: [], score: undefined });
                 setIndictments(indictmentsData ?? []);
 
-                // If solver is still active, set up polling
                 if (solutionData?.solverStatus === "SOLVING_ACTIVE") {
                     if (!intervalId) {
-                        intervalId = window.setInterval(() => fetchData(), 1000);
+                        intervalId = window.setInterval(() => fetchData(), 250);
                     }
                 } else {
-                    // Solver finished, clear polling
                     if (intervalId) {
                         clearInterval(intervalId);
                         intervalId = null;
@@ -202,34 +200,25 @@ function JobDetails({ jobId }: { jobId?: string }) {
     const employeeCount = solution?.employees?.length || 0;
 
     return (
-        <div style={{ padding: 16 }}>
+        <>
+            <div className="p-4 items-center gap-3">
+                <h1 className="text-3xl font-bold">Schedule details</h1>
+                <Link to="/" className="text-blue-600 hover:underline">Home</Link>
+            </div>
+        <div className="p-4">
             {isSolving && (
-                <div style={{ 
-                    padding: 12, 
-                    marginBottom: 16, 
-                    background: "#ffc107", 
-                    color: "#000", 
-                    borderRadius: 6,
-                    fontWeight: 600 
-                }}>
+                <div className="p-3 mb-4 rounded-md font-semibold w-1/5" style={{ color: "#ffc107" }}>
                     Solver is running...
                 </div>
             )}
 
             {!isSolving && (
-                <div style={{ 
-                    padding: 12, 
-                    marginBottom: 16, 
-                    background: "#198754", 
-                    color: "#fff", 
-                    borderRadius: 6,
-                    fontWeight: 600 
-                }}>
+                <div className="p-3 mb-4 rounded-md font-semibold w-1/5" style={{ color: "#198754" }}>
                     Solver has finished running.
                 </div>    
             )}
             
-            <div style={{ marginBottom: 12 }}>
+            <div className="mb-3">
                 <span id="score_a" style={{ marginRight: 12, cursor: "pointer" }} onClick={() => setActivePopover(activePopover === "score" ? null : "score")}>
                     <span style={getHardScore(analysis?.score ?? "0hard/0soft") === 0 ? badgeStyles.success : badgeStyles.danger}>Score Breakdown</span>
                 </span>
@@ -245,7 +234,7 @@ function JobDetails({ jobId }: { jobId?: string }) {
 
             <div id="employees_container">
                 <h3>Employees</h3>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+                <div className="flex flex-wrap mt-2 gap-4">
                     {solution?.employees.map((emp) => {
                         const key = `emp-${emp.id}`;
                         const empIndict = indictmentMap[emp.name] || indictmentMap[emp.id];
@@ -300,6 +289,7 @@ function JobDetails({ jobId }: { jobId?: string }) {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 
