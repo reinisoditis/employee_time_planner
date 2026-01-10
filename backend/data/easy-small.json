@@ -1,0 +1,819 @@
+{
+  "employees" : [ {
+    "id" : "emp1",
+    "name" : "Alice",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.8910254720131472,
+      "EVENING" : 0.7234877821330639,
+      "DAY" : 0.8732893887039381
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp2",
+    "name" : "Bob",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.9613489058688713,
+      "EVENING" : 0.710299227776681,
+      "DAY" : 0.7475131653645223
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp3",
+    "name" : "Charlie",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.9677311131474867,
+      "EVENING" : 0.899962472502179,
+      "DAY" : 0.7745963897693147
+    },
+    "wantsWeekendDayOff" : true
+  }, {
+    "id" : "emp4",
+    "name" : "Diana",
+    "unavailableDates" : [ [ 2025, 1, 6 ] ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.8377399643558736,
+      "EVENING" : 0.9303863487551284,
+      "DAY" : 0.6839070275465329
+    },
+    "wantsWeekendDayOff" : true
+  }, {
+    "id" : "emp5",
+    "name" : "Eve",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.8574488673868199,
+      "EVENING" : 0.6362658009082671,
+      "DAY" : 0.6321143780948215
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp6",
+    "name" : "Frank",
+    "unavailableDates" : [ [ 2025, 1, 9 ] ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.6796326328384694,
+      "EVENING" : 0.9078141091706495,
+      "DAY" : 0.6044265295129271
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp7",
+    "name" : "Grace",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.7166625989647216,
+      "EVENING" : 0.9281967293545387,
+      "DAY" : 0.9799440538637867
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp8",
+    "name" : "Henry",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.7441019501464541,
+      "EVENING" : 0.7829268377779077,
+      "DAY" : 0.7738644340562442
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp9",
+    "name" : "Ivy",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.930928969605998,
+      "EVENING" : 0.9335464941776663,
+      "DAY" : 0.6604126218115033
+    },
+    "wantsWeekendDayOff" : true
+  }, {
+    "id" : "emp10",
+    "name" : "Jack",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.6783856829692624,
+      "EVENING" : 0.9462747185309409,
+      "DAY" : 0.671709376349967
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp11",
+    "name" : "Kate",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.8531479165413116,
+      "EVENING" : 0.7261313800230692,
+      "DAY" : 0.8799434580268688
+    },
+    "wantsWeekendDayOff" : false
+  }, {
+    "id" : "emp12",
+    "name" : "Leo",
+    "unavailableDates" : [ ],
+    "shiftTypePreferences" : {
+      "MORNING" : 0.9487258383859355,
+      "EVENING" : 0.8464854740140715,
+      "DAY" : 0.9222923770647992
+    },
+    "wantsWeekendDayOff" : false
+  } ],
+  "shifts" : [ {
+    "id" : "shift_d1_morning",
+    "startTime" : [ 2025, 1, 6, 6, 0 ],
+    "endTime" : [ 2025, 1, 6, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 6 ]
+  }, {
+    "id" : "shift_d1_day",
+    "startTime" : [ 2025, 1, 6, 9, 0 ],
+    "endTime" : [ 2025, 1, 6, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 6 ]
+  }, {
+    "id" : "shift_d1_evening",
+    "startTime" : [ 2025, 1, 6, 14, 0 ],
+    "endTime" : [ 2025, 1, 6, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 6 ]
+  }, {
+    "id" : "shift_d2_morning",
+    "startTime" : [ 2025, 1, 7, 6, 0 ],
+    "endTime" : [ 2025, 1, 7, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 7 ]
+  }, {
+    "id" : "shift_d2_day",
+    "startTime" : [ 2025, 1, 7, 9, 0 ],
+    "endTime" : [ 2025, 1, 7, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 7 ]
+  }, {
+    "id" : "shift_d2_evening",
+    "startTime" : [ 2025, 1, 7, 14, 0 ],
+    "endTime" : [ 2025, 1, 7, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 7 ]
+  }, {
+    "id" : "shift_d3_morning",
+    "startTime" : [ 2025, 1, 8, 6, 0 ],
+    "endTime" : [ 2025, 1, 8, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 8 ]
+  }, {
+    "id" : "shift_d3_day",
+    "startTime" : [ 2025, 1, 8, 9, 0 ],
+    "endTime" : [ 2025, 1, 8, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 8 ]
+  }, {
+    "id" : "shift_d3_evening",
+    "startTime" : [ 2025, 1, 8, 14, 0 ],
+    "endTime" : [ 2025, 1, 8, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 8 ]
+  }, {
+    "id" : "shift_d4_morning",
+    "startTime" : [ 2025, 1, 9, 6, 0 ],
+    "endTime" : [ 2025, 1, 9, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 9 ]
+  }, {
+    "id" : "shift_d4_day",
+    "startTime" : [ 2025, 1, 9, 9, 0 ],
+    "endTime" : [ 2025, 1, 9, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 9 ]
+  }, {
+    "id" : "shift_d4_evening",
+    "startTime" : [ 2025, 1, 9, 14, 0 ],
+    "endTime" : [ 2025, 1, 9, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 9 ]
+  }, {
+    "id" : "shift_d5_morning",
+    "startTime" : [ 2025, 1, 10, 6, 0 ],
+    "endTime" : [ 2025, 1, 10, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 10 ]
+  }, {
+    "id" : "shift_d5_day",
+    "startTime" : [ 2025, 1, 10, 9, 0 ],
+    "endTime" : [ 2025, 1, 10, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 10 ]
+  }, {
+    "id" : "shift_d5_evening",
+    "startTime" : [ 2025, 1, 10, 14, 0 ],
+    "endTime" : [ 2025, 1, 10, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 10 ]
+  }, {
+    "id" : "shift_d6_morning",
+    "startTime" : [ 2025, 1, 11, 6, 0 ],
+    "endTime" : [ 2025, 1, 11, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 11 ]
+  }, {
+    "id" : "shift_d6_day",
+    "startTime" : [ 2025, 1, 11, 9, 0 ],
+    "endTime" : [ 2025, 1, 11, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 11 ]
+  }, {
+    "id" : "shift_d6_evening",
+    "startTime" : [ 2025, 1, 11, 14, 0 ],
+    "endTime" : [ 2025, 1, 11, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 11 ]
+  }, {
+    "id" : "shift_d7_morning",
+    "startTime" : [ 2025, 1, 12, 6, 0 ],
+    "endTime" : [ 2025, 1, 12, 14, 0 ],
+    "shiftType" : "MORNING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 12 ]
+  }, {
+    "id" : "shift_d7_day",
+    "startTime" : [ 2025, 1, 12, 9, 0 ],
+    "endTime" : [ 2025, 1, 12, 17, 0 ],
+    "shiftType" : "DAY",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 12 ]
+  }, {
+    "id" : "shift_d7_evening",
+    "startTime" : [ 2025, 1, 12, 14, 0 ],
+    "endTime" : [ 2025, 1, 12, 22, 0 ],
+    "shiftType" : "EVENING",
+    "requiredEmployees" : 2,
+    "date" : [ 2025, 1, 12 ]
+  } ],
+  "shiftAssignments" : [ {
+    "id" : "assign_d1_morning_1",
+    "shift" : {
+      "id" : "shift_d1_morning",
+      "startTime" : [ 2025, 1, 6, 6, 0 ],
+      "endTime" : [ 2025, 1, 6, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d1_morning_2",
+    "shift" : {
+      "id" : "shift_d1_morning",
+      "startTime" : [ 2025, 1, 6, 6, 0 ],
+      "endTime" : [ 2025, 1, 6, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d1_day_1",
+    "shift" : {
+      "id" : "shift_d1_day",
+      "startTime" : [ 2025, 1, 6, 9, 0 ],
+      "endTime" : [ 2025, 1, 6, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d1_day_2",
+    "shift" : {
+      "id" : "shift_d1_day",
+      "startTime" : [ 2025, 1, 6, 9, 0 ],
+      "endTime" : [ 2025, 1, 6, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d1_evening_1",
+    "shift" : {
+      "id" : "shift_d1_evening",
+      "startTime" : [ 2025, 1, 6, 14, 0 ],
+      "endTime" : [ 2025, 1, 6, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d1_evening_2",
+    "shift" : {
+      "id" : "shift_d1_evening",
+      "startTime" : [ 2025, 1, 6, 14, 0 ],
+      "endTime" : [ 2025, 1, 6, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 6 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 6 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d2_morning_1",
+    "shift" : {
+      "id" : "shift_d2_morning",
+      "startTime" : [ 2025, 1, 7, 6, 0 ],
+      "endTime" : [ 2025, 1, 7, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d2_morning_2",
+    "shift" : {
+      "id" : "shift_d2_morning",
+      "startTime" : [ 2025, 1, 7, 6, 0 ],
+      "endTime" : [ 2025, 1, 7, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d2_day_1",
+    "shift" : {
+      "id" : "shift_d2_day",
+      "startTime" : [ 2025, 1, 7, 9, 0 ],
+      "endTime" : [ 2025, 1, 7, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d2_day_2",
+    "shift" : {
+      "id" : "shift_d2_day",
+      "startTime" : [ 2025, 1, 7, 9, 0 ],
+      "endTime" : [ 2025, 1, 7, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d2_evening_1",
+    "shift" : {
+      "id" : "shift_d2_evening",
+      "startTime" : [ 2025, 1, 7, 14, 0 ],
+      "endTime" : [ 2025, 1, 7, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d2_evening_2",
+    "shift" : {
+      "id" : "shift_d2_evening",
+      "startTime" : [ 2025, 1, 7, 14, 0 ],
+      "endTime" : [ 2025, 1, 7, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 7 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 7 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d3_morning_1",
+    "shift" : {
+      "id" : "shift_d3_morning",
+      "startTime" : [ 2025, 1, 8, 6, 0 ],
+      "endTime" : [ 2025, 1, 8, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d3_morning_2",
+    "shift" : {
+      "id" : "shift_d3_morning",
+      "startTime" : [ 2025, 1, 8, 6, 0 ],
+      "endTime" : [ 2025, 1, 8, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d3_day_1",
+    "shift" : {
+      "id" : "shift_d3_day",
+      "startTime" : [ 2025, 1, 8, 9, 0 ],
+      "endTime" : [ 2025, 1, 8, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d3_day_2",
+    "shift" : {
+      "id" : "shift_d3_day",
+      "startTime" : [ 2025, 1, 8, 9, 0 ],
+      "endTime" : [ 2025, 1, 8, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d3_evening_1",
+    "shift" : {
+      "id" : "shift_d3_evening",
+      "startTime" : [ 2025, 1, 8, 14, 0 ],
+      "endTime" : [ 2025, 1, 8, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d3_evening_2",
+    "shift" : {
+      "id" : "shift_d3_evening",
+      "startTime" : [ 2025, 1, 8, 14, 0 ],
+      "endTime" : [ 2025, 1, 8, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 8 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 8 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d4_morning_1",
+    "shift" : {
+      "id" : "shift_d4_morning",
+      "startTime" : [ 2025, 1, 9, 6, 0 ],
+      "endTime" : [ 2025, 1, 9, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d4_morning_2",
+    "shift" : {
+      "id" : "shift_d4_morning",
+      "startTime" : [ 2025, 1, 9, 6, 0 ],
+      "endTime" : [ 2025, 1, 9, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d4_day_1",
+    "shift" : {
+      "id" : "shift_d4_day",
+      "startTime" : [ 2025, 1, 9, 9, 0 ],
+      "endTime" : [ 2025, 1, 9, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d4_day_2",
+    "shift" : {
+      "id" : "shift_d4_day",
+      "startTime" : [ 2025, 1, 9, 9, 0 ],
+      "endTime" : [ 2025, 1, 9, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d4_evening_1",
+    "shift" : {
+      "id" : "shift_d4_evening",
+      "startTime" : [ 2025, 1, 9, 14, 0 ],
+      "endTime" : [ 2025, 1, 9, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d4_evening_2",
+    "shift" : {
+      "id" : "shift_d4_evening",
+      "startTime" : [ 2025, 1, 9, 14, 0 ],
+      "endTime" : [ 2025, 1, 9, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 9 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 9 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d5_morning_1",
+    "shift" : {
+      "id" : "shift_d5_morning",
+      "startTime" : [ 2025, 1, 10, 6, 0 ],
+      "endTime" : [ 2025, 1, 10, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d5_morning_2",
+    "shift" : {
+      "id" : "shift_d5_morning",
+      "startTime" : [ 2025, 1, 10, 6, 0 ],
+      "endTime" : [ 2025, 1, 10, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d5_day_1",
+    "shift" : {
+      "id" : "shift_d5_day",
+      "startTime" : [ 2025, 1, 10, 9, 0 ],
+      "endTime" : [ 2025, 1, 10, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d5_day_2",
+    "shift" : {
+      "id" : "shift_d5_day",
+      "startTime" : [ 2025, 1, 10, 9, 0 ],
+      "endTime" : [ 2025, 1, 10, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d5_evening_1",
+    "shift" : {
+      "id" : "shift_d5_evening",
+      "startTime" : [ 2025, 1, 10, 14, 0 ],
+      "endTime" : [ 2025, 1, 10, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d5_evening_2",
+    "shift" : {
+      "id" : "shift_d5_evening",
+      "startTime" : [ 2025, 1, 10, 14, 0 ],
+      "endTime" : [ 2025, 1, 10, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 10 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 10 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d6_morning_1",
+    "shift" : {
+      "id" : "shift_d6_morning",
+      "startTime" : [ 2025, 1, 11, 6, 0 ],
+      "endTime" : [ 2025, 1, 11, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d6_morning_2",
+    "shift" : {
+      "id" : "shift_d6_morning",
+      "startTime" : [ 2025, 1, 11, 6, 0 ],
+      "endTime" : [ 2025, 1, 11, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d6_day_1",
+    "shift" : {
+      "id" : "shift_d6_day",
+      "startTime" : [ 2025, 1, 11, 9, 0 ],
+      "endTime" : [ 2025, 1, 11, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d6_day_2",
+    "shift" : {
+      "id" : "shift_d6_day",
+      "startTime" : [ 2025, 1, 11, 9, 0 ],
+      "endTime" : [ 2025, 1, 11, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d6_evening_1",
+    "shift" : {
+      "id" : "shift_d6_evening",
+      "startTime" : [ 2025, 1, 11, 14, 0 ],
+      "endTime" : [ 2025, 1, 11, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d6_evening_2",
+    "shift" : {
+      "id" : "shift_d6_evening",
+      "startTime" : [ 2025, 1, 11, 14, 0 ],
+      "endTime" : [ 2025, 1, 11, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 11 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 11 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d7_morning_1",
+    "shift" : {
+      "id" : "shift_d7_morning",
+      "startTime" : [ 2025, 1, 12, 6, 0 ],
+      "endTime" : [ 2025, 1, 12, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d7_morning_2",
+    "shift" : {
+      "id" : "shift_d7_morning",
+      "startTime" : [ 2025, 1, 12, 6, 0 ],
+      "endTime" : [ 2025, 1, 12, 14, 0 ],
+      "shiftType" : "MORNING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "MORNING"
+  }, {
+    "id" : "assign_d7_day_1",
+    "shift" : {
+      "id" : "shift_d7_day",
+      "startTime" : [ 2025, 1, 12, 9, 0 ],
+      "endTime" : [ 2025, 1, 12, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d7_day_2",
+    "shift" : {
+      "id" : "shift_d7_day",
+      "startTime" : [ 2025, 1, 12, 9, 0 ],
+      "endTime" : [ 2025, 1, 12, 17, 0 ],
+      "shiftType" : "DAY",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "DAY"
+  }, {
+    "id" : "assign_d7_evening_1",
+    "shift" : {
+      "id" : "shift_d7_evening",
+      "startTime" : [ 2025, 1, 12, 14, 0 ],
+      "endTime" : [ 2025, 1, 12, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "EVENING"
+  }, {
+    "id" : "assign_d7_evening_2",
+    "shift" : {
+      "id" : "shift_d7_evening",
+      "startTime" : [ 2025, 1, 12, 14, 0 ],
+      "endTime" : [ 2025, 1, 12, 22, 0 ],
+      "shiftType" : "EVENING",
+      "requiredEmployees" : 2,
+      "date" : [ 2025, 1, 12 ]
+    },
+    "employee" : null,
+    "date" : [ 2025, 1, 12 ],
+    "shiftType" : "EVENING"
+  } ],
+  "score" : null
+}

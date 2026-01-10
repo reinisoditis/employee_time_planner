@@ -141,20 +141,18 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
     private Constraint evenShiftDistribution(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .forEach(ShiftAssignment.class)
-                .filter(assignment -> assignment.getEmployee() != null)
+                .filter(a -> a.getEmployee() != null)
+                .groupBy(ShiftAssignment::getEmployee, ConstraintCollectors.count())
+                .complement(Employee.class, e -> 0)
                 .groupBy(
-                        ShiftAssignment::getEmployee,
-                        ConstraintCollectors.count(),
-                        ConstraintCollectors.countDistinct(ShiftAssignment::getEmployee),
-                        ConstraintCollectors.countLong()
+                        ConstraintCollectors.min((Employee e, Integer count) -> count),
+                        ConstraintCollectors.max((Employee e, Integer count) -> count)
                 )
                 .penalize(HardSoftScore.ONE_SOFT,
-                        (employee, employeeShiftCount, distinctEmployees, totalShifts) -> {
-                            // Calculate ideal shifts per employee dynamically
-                            double idealShifts = (double) totalShifts / distinctEmployees;
-                            double deviation = Math.abs(employeeShiftCount - idealShifts);
-                            // Quadratic penalty emphasizes larger deviations
-                            return (int) (deviation * deviation * 50);
+                        (minCount, maxCount) -> {
+                            int spread = maxCount - minCount;
+                            // Allow spread of 2 without penalty
+                            return spread <= 2 ? 0 : (spread - 2) * 50;
                         })
                 .asConstraint("P1: Even shift distribution");
     }

@@ -14,81 +14,99 @@
                 <constraintProviderClass>com.example.scheduler.solver.ScheduleConstraintProvider</constraintProviderClass>
             </scoreDirectorFactory>
             <termination>
-                <secondsSpentLimit>60</secondsSpentLimit> <!-- Longer runtime -->
+                <secondsSpentLimit>30</secondsSpentLimit>
             </termination>
         </solver>
     </inheritedSolverBenchmark>
 
-    <!-- Baseline winner -->
+    <!-- 1. BASELINE: Timefold default configuration -->
     <solverBenchmark>
-        <name>Default_Config</name>
+        <name>1_Default_Baseline</name>
         <solver>
             <constructionHeuristic/>
             <localSearch/>
         </solver>
     </solverBenchmark>
 
-    <!-- Test different Tabu sizes -->
+    <!-- 2. TABU SEARCH: Classic metaheuristic (shows limitations) -->
     <solverBenchmark>
-        <name>Tabu_Size_5</name>
+        <name>2_Tabu_Search</name>
         <solver>
             <constructionHeuristic/>
             <localSearch>
+                <unionMoveSelector>
+                    <changeMoveSelector/>
+                    <swapMoveSelector/>
+                </unionMoveSelector>
                 <acceptor>
-                    <entityTabuSize>5</entityTabuSize>
+                    <entityTabuSize>15</entityTabuSize>
                 </acceptor>
+                <forager>
+                    <acceptedCountLimit>4</acceptedCountLimit>
+                </forager>
             </localSearch>
         </solver>
     </solverBenchmark>
 
+    <!-- 3. LATE ACCEPTANCE: History-based diversification -->
     <solverBenchmark>
-        <name>Tabu_Size_10</name>
+        <name>3_Late_Acceptance</name>
         <solver>
             <constructionHeuristic/>
             <localSearch>
+                <unionMoveSelector>
+                    <changeMoveSelector/>
+                    <swapMoveSelector/>
+                </unionMoveSelector>
                 <acceptor>
-                    <entityTabuSize>10</entityTabuSize>
+                    <lateAcceptanceSize>400</lateAcceptanceSize>
                 </acceptor>
+                <forager>
+                    <acceptedCountLimit>4</acceptedCountLimit>
+                </forager>
             </localSearch>
         </solver>
     </solverBenchmark>
 
+    <!-- 4. SIMULATED ANNEALING: Best performer on large problems -->
     <solverBenchmark>
-        <name>Tabu_Size_20</name>
+        <name>4_Simulated_Annealing</name>
         <solver>
             <constructionHeuristic/>
             <localSearch>
+                <unionMoveSelector>
+                    <changeMoveSelector/>
+                    <swapMoveSelector/>
+                </unionMoveSelector>
                 <acceptor>
-                    <entityTabuSize>20</entityTabuSize>
+                    <simulatedAnnealingStartingTemperature>0hard/200soft</simulatedAnnealingStartingTemperature>
                 </acceptor>
+                <forager>
+                    <acceptedCountLimit>4</acceptedCountLimit>
+                </forager>
             </localSearch>
         </solver>
     </solverBenchmark>
 
-    <!-- Test Simulated Annealing -->
+    <!-- 5. HYBRID: Tabu + Simulated Annealing combined -->
     <solverBenchmark>
-        <name>Simulated_Annealing</name>
+        <name>5_Hybrid_Tabu_SA</name>
         <solver>
             <constructionHeuristic/>
             <localSearch>
-                <acceptor>
-                    <simulatedAnnealingStartingTemperature>0hard/100soft</simulatedAnnealingStartingTemperature>
-                </acceptor>
-            </localSearch>
-        </solver>
-    </solverBenchmark>
-
-    <!-- Test combined acceptors -->
-    <solverBenchmark>
-        <name>Tabu_Plus_SimAnneal</name>
-        <solver>
-            <constructionHeuristic/>
-            <localSearch>
+                <unionMoveSelector>
+                    <changeMoveSelector/>
+                    <swapMoveSelector/>
+                </unionMoveSelector>
                 <acceptor>
                     <entityTabuSize>7</entityTabuSize>
-                    <simulatedAnnealingStartingTemperature>0hard/50soft</simulatedAnnealingStartingTemperature>
+                    <simulatedAnnealingStartingTemperature>0hard/100soft</simulatedAnnealingStartingTemperature>
                 </acceptor>
+                <forager>
+                    <acceptedCountLimit>4</acceptedCountLimit>
+                </forager>
             </localSearch>
         </solver>
     </solverBenchmark>
+
 </plannerBenchmark>

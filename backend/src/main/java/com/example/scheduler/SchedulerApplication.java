@@ -1,17 +1,14 @@
 package com.example.scheduler;
-
 import ai.timefold.solver.benchmark.api.PlannerBenchmark;
 import ai.timefold.solver.benchmark.api.PlannerBenchmarkFactory;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.Solver;
 import ai.timefold.solver.core.api.solver.SolverFactory;
-import ai.timefold.solver.core.config.solver.SolverConfig;
 import ai.timefold.solver.core.api.solver.SolutionManager;
 import com.example.scheduler.domain.Employee;
 import com.example.scheduler.domain.Schedule;
 import com.example.scheduler.domain.Shift;
 import com.example.scheduler.domain.ShiftAssignment;
-import com.example.scheduler.solver.ScheduleConstraintProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,12 +29,12 @@ public class SchedulerApplication {
 
     public static void main(String[] args) throws IOException {
         // Generate test data JSON files
-        //generateTestDataJsonFiles();
+        //generateAllTestData();
 
-        // Run Timefold optimizer test with JSON input
-        //runTimefoldTest("data/medium-schedule.json");
+        // Test with a specific problem
+        runTimefoldTest("data/hard-large.json");
 
-        runBenchmark();
+        //runBenchmark();
     }
 
     private static void runTimefoldTest(String jsonFilePath) throws IOException {
@@ -50,25 +46,63 @@ public class SchedulerApplication {
         SolverFactory<Schedule> solverFactory = SolverFactory.createFromXmlResource("solverConfig.xml");
         Solver<Schedule> solver = solverFactory.buildSolver();
 
-        System.out.println("Solving... (max 30 seconds)\n");
+        // Track scores at different stages
+        final HardSoftScore[] constructionScore = {null};
+        final long[] constructionEndTime = {0};
+        final long startTime = System.currentTimeMillis();
+        final int[] improvementCount = {0};
+
+        solver.addEventListener(event -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            HardSoftScore newScore = (HardSoftScore) event.getNewBestScore();
+
+            if (constructionScore[0] == null) {
+                constructionScore[0] = newScore;
+                constructionEndTime[0] = System.currentTimeMillis();
+                System.out.println("\n>>> Construction Heuristic completed!");
+                System.out.println("    Score: " + constructionScore[0] + " (at " + elapsed + "ms)");
+            } else {
+                improvementCount[0]++;
+            }
+            System.out.flush();
+        });
+
         Schedule solution = solver.solve(problem);
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("\n>>> Solving complete. Total LS improvements: " + improvementCount[0]);
+
+        // Print phase comparison
+        System.out.println("\n=== Phase Comparison ===");
+        System.out.println("Construction Heuristic:");
+        System.out.println("  Score: " + constructionScore[0]);
+        System.out.println("  Time:  " + (constructionEndTime[0] - startTime) + "ms");
+        System.out.println("\nLocal Search:");
+        System.out.println("  Score: " + solution.getScore());
+        System.out.println("  Time:  " + (endTime - constructionEndTime[0]) + "ms");
+        System.out.println("\nImprovement:");
+        if (constructionScore[0] != null) {
+            int hardImproved = solution.getScore().hardScore() - constructionScore[0].hardScore();
+            int softImproved = solution.getScore().softScore() - constructionScore[0].softScore();
+            System.out.println("  Hard: " + (hardImproved >= 0 ? "+" : "") + hardImproved);
+            System.out.println("  Soft: " + (softImproved >= 0 ? "+" : "") + softImproved);
+        }
+        System.out.println("  Total time: " + (endTime - startTime) + "ms");
 
         SolutionManager<Schedule, HardSoftScore> solutionManager = SolutionManager.create(solverFactory);
         log.info(solutionManager.explain(solution).getSummary());
 
-        printSolution(solution);
+        //printSolution(solution);
     }
 
     private static void runBenchmark() throws IOException {
         System.out.println("=== Starting Timefold Benchmark ===\n");
 
-        // Load problem datasets
         List<Schedule> problemList = new ArrayList<>();
-        problemList.add(loadScheduleFromJson("data/small-schedule.json"));
-        problemList.add(loadScheduleFromJson("data/medium-schedule.json"));
-        problemList.add(loadScheduleFromJson("data/large-schedule.json"));
+        problemList.add(loadScheduleFromJson("data/medium-small.json"));
+        problemList.add(loadScheduleFromJson("data/hard-medium.json"));
+        problemList.add(loadScheduleFromJson("data/hard-large.json"));
 
-        // Create and run benchmark
         PlannerBenchmarkFactory benchmarkFactory =
                 PlannerBenchmarkFactory.createFromXmlResource("benchmarkConfig.xml");
         PlannerBenchmark benchmark = benchmarkFactory.buildPlannerBenchmark(
@@ -76,6 +110,231 @@ public class SchedulerApplication {
         );
 
         benchmark.benchmarkAndShowReportInBrowser();
+    }
+
+    private static Schedule generateProblem(int numEmployees, int numWeeks, int shiftsPerDay,
+                                            int employeesPerShift, int difficulty) {
+
+        int numDays = numWeeks * 7;
+        int totalShiftSlots = numDays * shiftsPerDay * employeesPerShift;
+        int maxShiftsPerEmployee = numWeeks * 5;
+        int minEmployeesRequired = (int) Math.ceil((double) totalShiftSlots / maxShiftsPerEmployee);
+
+        // Validate feasibility
+        if (numEmployees < minEmployeesRequired) {
+            throw new IllegalArgumentException(
+                    String.format("Infeasible: need at least %d employees for %d shift slots (have %d)",
+                            minEmployeesRequired, totalShiftSlots, numEmployees));
+        }
+
+        double utilizationRate = (double) totalShiftSlots / (numEmployees * maxShiftsPerEmployee);
+        System.out.printf("Problem: %d employees, %d days, %d shifts total%n", numEmployees, numDays, totalShiftSlots);
+        System.out.printf("Utilization: %.1f%% (higher = harder)%n", utilizationRate * 100);
+
+        Random random = new Random(42); // Fixed seed for reproducibility
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 6, 0, 0); // Start on Monday
+
+        List<Employee> employees = generateEmployees(numEmployees, numDays, startDate, difficulty, random);
+        List<Shift> shifts = new ArrayList<>();
+        List<ShiftAssignment> shiftAssignments = new ArrayList<>();
+
+        generateShiftsAndAssignments(numDays, shiftsPerDay, employeesPerShift, startDate, shifts, shiftAssignments);
+
+        return new Schedule(employees, shifts, shiftAssignments);
+    }
+
+    private static List<Employee> generateEmployees(int numEmployees, int numDays, LocalDateTime startDate,
+                                                    int difficulty, Random random) {
+        String[] names = {"Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry",
+                "Ivy", "Jack", "Kate", "Leo", "Mia", "Noah", "Olivia", "Paul", "Quinn", "Rose", "Sam", "Tara",
+                "Uma", "Victor", "Wendy", "Xander", "Yara", "Zane", "Amy", "Ben", "Cara", "Dan",
+                "Emma", "Finn", "Gina", "Hugo", "Iris", "Jake", "Kira", "Liam", "Maya", "Nina",
+                "Owen", "Piper", "Quill", "Rita", "Seth", "Tina", "Umar", "Vera", "Will", "Xena"};
+
+        List<Employee> employees = new ArrayList<>();
+
+        // Calculate safe unavailability limits
+        // Each week, employee can miss at most 2 days and still work 5 (meeting H3 capacity)
+        int numWeeks = (int) Math.ceil(numDays / 7.0);
+        int maxUnavailableDays = numWeeks; // Conservative: max 1 day off per week on average
+
+        for (int i = 0; i < numEmployees; i++) {
+            String name = i < names.length ? names[i] : "Employee" + (i + 1);
+            String empId = "emp" + (i + 1);
+
+            // Generate shift preferences based on difficulty
+            Map<String, Double> preferences = generatePreferences(i, difficulty, random);
+
+            // Generate unavailability based on difficulty
+            Set<LocalDate> unavailableDates = generateUnavailability(
+                    numDays, maxUnavailableDays, difficulty, startDate, random);
+
+            // Weekend preference based on difficulty
+            double weekendPrefChance = switch (difficulty) {
+                case 1 -> 0.3;  // Easy: 30% want weekend off
+                case 2 -> 0.5;  // Medium: 50%
+                case 3 -> 0.7;  // Hard: 70%
+                default -> 0.5;
+            };
+            boolean wantsWeekendDayOff = random.nextDouble() < weekendPrefChance;
+
+            employees.add(new Employee(empId, name, unavailableDates, preferences, wantsWeekendDayOff));
+        }
+
+        return employees;
+    }
+
+    /**
+     * Generates shift preferences based on employee index and difficulty.
+     */
+    private static Map<String, Double> generatePreferences(int employeeIndex, int difficulty, Random random) {
+        Map<String, Double> preferences = new HashMap<>();
+
+        if (difficulty == 1) {
+            // Easy: Everyone is fairly flexible
+            preferences.put("MORNING", 0.6 + random.nextDouble() * 0.4);  // 0.6-1.0
+            preferences.put("DAY", 0.6 + random.nextDouble() * 0.4);      // 0.6-1.0
+            preferences.put("EVENING", 0.6 + random.nextDouble() * 0.4);  // 0.6-1.0
+        } else if (difficulty == 2) {
+            // Medium: People have clear preferences but no absolutes
+            int type = employeeIndex % 3;
+            if (type == 0) {
+                preferences.put("MORNING", 0.9);
+                preferences.put("DAY", 0.5);
+                preferences.put("EVENING", 0.2);
+            } else if (type == 1) {
+                preferences.put("MORNING", 0.2);
+                preferences.put("DAY", 0.5);
+                preferences.put("EVENING", 0.9);
+            } else {
+                preferences.put("MORNING", 0.4);
+                preferences.put("DAY", 0.9);
+                preferences.put("EVENING", 0.4);
+            }
+        } else {
+            // Hard: Strong preferences with some absolute refusals (0.0)
+            int type = employeeIndex % 5;
+            switch (type) {
+                case 0 -> { // Morning person
+                    preferences.put("MORNING", 1.0);
+                    preferences.put("DAY", 0.4);
+                    preferences.put("EVENING", 0.1);
+                }
+                case 1 -> { // Evening person
+                    preferences.put("MORNING", 0.1);
+                    preferences.put("DAY", 0.4);
+                    preferences.put("EVENING", 1.0);
+                }
+                case 2 -> { // Day only
+                    preferences.put("MORNING", 0.2);
+                    preferences.put("DAY", 1.0);
+                    preferences.put("EVENING", 0.2);
+                }
+                case 3 -> { // Morning/Day, hates evening
+                    preferences.put("MORNING", 0.8);
+                    preferences.put("DAY", 0.8);
+                    preferences.put("EVENING", 0.1);
+                }
+                case 4 -> { // Flexible
+                    preferences.put("MORNING", 0.6);
+                    preferences.put("DAY", 0.7);
+                    preferences.put("EVENING", 0.6);
+                }
+            }
+        }
+
+        return preferences;
+    }
+
+    private static Set<LocalDate> generateUnavailability(int numDays, int maxDays, int difficulty,
+                                                         LocalDateTime startDate, Random random) {
+        Set<LocalDate> unavailable = new HashSet<>();
+
+        // Probability of having any unavailability
+        double hasUnavailabilityChance = switch (difficulty) {
+            case 1 -> 0.2;  // Easy: 20% have days off
+            case 2 -> 0.4;  // Medium: 40%
+            case 3 -> 0.5;  // Hard: 50%
+            default -> 0.3;
+        };
+
+        if (random.nextDouble() < hasUnavailabilityChance) {
+            // Number of days off (1 to maxDays based on difficulty)
+            int daysOff = switch (difficulty) {
+                case 1 -> 1;
+                case 2 -> 1 + random.nextInt(Math.min(2, maxDays));
+                case 3 -> 1 + random.nextInt(Math.min(maxDays, 3));
+                default -> 1;
+            };
+
+            for (int d = 0; d < daysOff && unavailable.size() < maxDays; d++) {
+                int dayOffset = random.nextInt(numDays);
+                unavailable.add(startDate.plusDays(dayOffset).toLocalDate());
+            }
+        }
+
+        return unavailable;
+    }
+
+    private static void generateShiftsAndAssignments(int numDays, int shiftsPerDay, int employeesPerShift,
+                                                     LocalDateTime startDate,
+                                                     List<Shift> shifts, List<ShiftAssignment> assignments) {
+        String[] shiftTypes = {"MORNING", "DAY", "EVENING"};
+        int[][] shiftTimes = {{6, 14}, {9, 17}, {14, 22}}; // start hour, end hour
+
+        for (int day = 0; day < numDays; day++) {
+            LocalDateTime dayStart = startDate.plusDays(day);
+
+            for (int s = 0; s < shiftsPerDay && s < 3; s++) {
+                String shiftType = shiftTypes[s];
+                Shift shift = new Shift(
+                        "shift_d" + (day + 1) + "_" + shiftType.toLowerCase(),
+                        dayStart.withHour(shiftTimes[s][0]).withMinute(0),
+                        dayStart.withHour(shiftTimes[s][1]).withMinute(0),
+                        shiftType,
+                        employeesPerShift
+                );
+                shifts.add(shift);
+
+                // Create empty assignments for this shift
+                for (int e = 0; e < employeesPerShift; e++) {
+                    assignments.add(new ShiftAssignment(
+                            "assign_d" + (day + 1) + "_" + shiftType.toLowerCase() + "_" + (e + 1),
+                            shift,
+                            null  // Unassigned - solver will fill this
+                    ));
+                }
+            }
+        }
+    }
+
+    private static void generateAllTestData() throws IOException {
+        Path dataDir = Paths.get("data");
+        if (!Files.exists(dataDir)) {
+            Files.createDirectories(dataDir);
+        }
+
+        System.out.println("=== Generating Test Data ===\n");
+
+        // EASY problems - lots of slack, flexible employees
+        System.out.println("--- EASY Problems ---");
+        saveScheduleToJson(generateProblem(12, 1, 3, 2, 1), "data/easy-small.json");   // 42 slots, 60 capacity
+        saveScheduleToJson(generateProblem(20, 2, 3, 2, 1), "data/easy-medium.json");  // 84 slots, 200 capacity
+        saveScheduleToJson(generateProblem(30, 4, 3, 2, 1), "data/easy-large.json");   // 168 slots, 600 capacity
+
+        // MEDIUM problems - moderate pressure, some preference conflicts
+        System.out.println("\n--- MEDIUM Problems ---");
+        saveScheduleToJson(generateProblem(10, 1, 3, 2, 2), "data/medium-small.json");  // 42 slots, 50 capacity
+        saveScheduleToJson(generateProblem(18, 2, 3, 2, 2), "data/medium-medium.json"); // 84 slots, 180 capacity
+        saveScheduleToJson(generateProblem(40, 4, 3, 3, 2), "data/medium-large.json");  // 252 slots, 800 capacity
+
+        // HARD problems - tight capacity, strong preference conflicts
+        System.out.println("\n--- HARD Problems ---");
+        saveScheduleToJson(generateProblem(10, 1, 3, 2, 3), "data/hard-small.json");   // 42 slots, 50 capacity (84%)
+        saveScheduleToJson(generateProblem(20, 2, 3, 3, 3), "data/hard-medium.json");  // 126 slots, 200 capacity (63%)
+        saveScheduleToJson(generateProblem(50, 4, 3, 4, 3), "data/hard-large.json");   // 336 slots, 1000 capacity (34%)
+
+        System.out.println("\n=== Test Data Generation Complete ===");
     }
 
 
@@ -90,30 +349,6 @@ public class SchedulerApplication {
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, schedule);
         System.out.println("\nSolution saved to: " + file.getAbsolutePath());
     }
-
-    private static void generateTestDataJsonFiles() throws IOException {
-        Path dataDir = Paths.get("data");
-        if (!Files.exists(dataDir)) {
-            Files.createDirectories(dataDir);
-            System.out.println("Created data directory: " + dataDir.toAbsolutePath());
-        }
-
-        // Generate small problem (8 employees, 5 days, 2 per shift, 3 shifts per day)
-        Schedule smallSchedule = generateTestData(8, 5, 2);
-        saveScheduleToJson(smallSchedule, "data/small-schedule.json");
-        System.out.println("Generated small-schedule.json (8 employees, 5 days, 3 shifts/day, 2 per shift = 30 assignments)\n");
-
-        // Generate medium problem (20 employees, 14 days, 3 per shift, 3 shifts per day)
-        Schedule mediumSchedule = generateTestData(20, 14, 3);
-        saveScheduleToJson(mediumSchedule, "data/medium-schedule.json");
-        System.out.println("Generated medium-schedule.json (20 employees, 14 days, 3 shifts/day, 3 per shift = 126 assignments)\n");
-
-        // Generate large problem (50 employees, 28 days, 4 per shift, 3 shifts per day)
-        Schedule largeSchedule = generateTestData(50, 28, 4);
-        saveScheduleToJson(largeSchedule, "data/large-schedule.json");
-        System.out.println("Generated large-schedule.json (50 employees, 28 days, 3 shifts/day, 4 per shift = 336 assignments)\n");
-    }
-
 
     private static void printSolution(Schedule solution) {
         System.out.println("=== Solution ===");
@@ -148,130 +383,6 @@ public class SchedulerApplication {
         System.out.println("  Hard Score (violations): " + solution.getScore().hardScore());
         System.out.println("  Soft Score (optimization): " + solution.getScore().softScore());
     }
-
-    private static Schedule generateTestData(int numEmployees, int numDays, int employeesPerShift) {
-        String[] employeeNames = {"Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry",
-                "Ivy", "Jack", "Kate", "Leo", "Mia", "Noah", "Olivia", "Paul", "Quinn", "Rose", "Sam", "Tara",
-                "Uma", "Victor", "Wendy", "Xander", "Yara", "Zane", "Amy", "Ben", "Cara", "Dan",
-                "Emma", "Finn", "Gina", "Hugo", "Iris", "Jake", "Kira", "Liam", "Maya", "Nina",
-                "Owen", "Piper", "Quill", "Rita", "Seth", "Tina", "Umar", "Vera", "Will", "Xena"};
-
-        List<Employee> employees = new ArrayList<>();
-        LocalDateTime startDate = LocalDateTime.of(2025, 1, 6, 9, 0);
-
-        for (int i = 0; i < numEmployees; i++) {
-            String name = i < employeeNames.length ? employeeNames[i] : "Employee" + (i + 1);
-            String empId = "emp" + (i + 1);
-
-            // Generate shift type preferences (some employees prefer certain shifts)
-            Map<String, Double> shiftPreferences = new HashMap<>();
-            if (i % 3 == 0) {
-                // Prefers morning shifts
-                shiftPreferences.put("MORNING", 1.0);
-                shiftPreferences.put("DAY", 0.5);
-                shiftPreferences.put("EVENING", 0.2);
-            } else if (i % 3 == 1) {
-                // Prefers evening shifts
-                shiftPreferences.put("MORNING", 0.3);
-                shiftPreferences.put("DAY", 0.6);
-                shiftPreferences.put("EVENING", 1.0);
-            } else {
-                // No strong preference
-                shiftPreferences.put("MORNING", 0.7);
-                shiftPreferences.put("DAY", 0.8);
-                shiftPreferences.put("EVENING", 0.7);
-            }
-
-            // Generate unavailable dates (some employees have time off)
-            Set<LocalDate> unavailableDates = new HashSet<>();
-            if (i % 5 == 0 && numDays >= 7) {
-                // Week off in the middle
-                int weekOffStart = numDays / 3;
-                for (int d = 0; d < 7; d++) {
-                    unavailableDates.add(startDate.plusDays(weekOffStart + d).toLocalDate());
-                }
-            } else if (i % 7 == 0 && numDays >= 3) {
-                // Random days off
-                unavailableDates.add(startDate.plusDays(2).toLocalDate());
-                unavailableDates.add(startDate.plusDays(5).toLocalDate());
-                if (numDays >= 10) {
-                    unavailableDates.add(startDate.plusDays(9).toLocalDate());
-                }
-            }
-
-            // Some employees want weekend days off
-            boolean wantsWeekendDayOff = i % 4 == 0;
-
-            Employee employee = new Employee(empId, name, unavailableDates, shiftPreferences, wantsWeekendDayOff);
-            employees.add(employee);
-        }
-
-        List<Shift> shifts = new ArrayList<>();
-        List<ShiftAssignment> shiftAssignments = new ArrayList<>();
-
-        // Create three shifts per day: MORNING, DAY, EVENING
-        for (int day = 0; day < numDays; day++) {
-            LocalDateTime dayStart = startDate.plusDays(day);
-
-            // Morning shift: 6:00 - 14:00
-            Shift morningShift = new Shift(
-                    "shift_day" + (day + 1) + "_morning",
-                    dayStart.withHour(6).withMinute(0),
-                    dayStart.withHour(14).withMinute(0),
-                    "MORNING",
-                    employeesPerShift
-            );
-            shifts.add(morningShift);
-
-            // Day shift: 9:00 - 17:00
-            Shift dayShift = new Shift(
-                    "shift_day" + (day + 1) + "_day",
-                    dayStart.withHour(9).withMinute(0),
-                    dayStart.withHour(17).withMinute(0),
-                    "DAY",
-                    employeesPerShift
-            );
-            shifts.add(dayShift);
-
-            // Evening shift: 14:00 - 22:00
-            Shift eveningShift = new Shift(
-                    "shift_day" + (day + 1) + "_evening",
-                    dayStart.withHour(14).withMinute(0),
-                    dayStart.withHour(22).withMinute(0),
-                    "EVENING",
-                    employeesPerShift
-            );
-            shifts.add(eveningShift);
-
-            // Create assignments for each shift
-            for (int i = 0; i < employeesPerShift; i++) {
-                shiftAssignments.add(new ShiftAssignment(
-                        "assign_day" + (day + 1) + "_morning_" + (i + 1),
-                        morningShift,
-                        null
-                ));
-            }
-
-            for (int i = 0; i < employeesPerShift; i++) {
-                shiftAssignments.add(new ShiftAssignment(
-                        "assign_day" + (day + 1) + "_day_" + (i + 1),
-                        dayShift,
-                        null
-                ));
-            }
-
-            for (int i = 0; i < employeesPerShift; i++) {
-                shiftAssignments.add(new ShiftAssignment(
-                        "assign_day" + (day + 1) + "_evening_" + (i + 1),
-                        eveningShift,
-                        null
-                ));
-            }
-        }
-
-        return new Schedule(employees, shifts, shiftAssignments);
-    }
-
 
     private static void printProblemDetails(Schedule problem) {
         System.out.println("--- Problem Details ---");
