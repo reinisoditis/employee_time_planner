@@ -1,21 +1,18 @@
 import { useMemo, useState, useEffect } from "react";
+import { BACKEND_API_ENDPOINTS } from '../config/api';
 
 type Employee = {
     id: string;
     name: string;
-    // map ISO date (YYYY-MM-DD) => shift description (empty/null => off)
     schedule?: Record<string, string | null>;
 };
 
 type ShiftAssignment = {
     id?: string;
-    // expected shape from backend: employee may be an object with id
     employee?: {
         id: string;
     };
-    // ISO date string (YYYY-MM-DD)
     date: string;
-    // shift object from backend
     shift?: {
         id: string;
         startTime: string;
@@ -49,11 +46,10 @@ const getWeekDates = (start: Date, days = 7) =>
 const formatShort = (d: Date) =>
     d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
-// Three color palette for shift types
 const SHIFT_COLORS = [
-    { bg: "#d4edda", text: "#155724" }, // Green
-    { bg: "#cce5ff", text: "#004085" }, // Blue
-    { bg: "#fff3cd", text: "#856404" }, // Yellow
+    { bg: "#d4edda", text: "#155724" }, 
+    { bg: "#cce5ff", text: "#004085" },
+    { bg: "#fff3cd", text: "#856404" },
 ];
 
 const sampleEmployees: Employee[] = [
@@ -91,7 +87,6 @@ export default function Schedule({
     initialStartDate,
     solutionId,
 }: {
-    // start date for the grid (defaults to today)
     initialStartDate?: Date;
     solutionId?: string;
 }) {
@@ -100,7 +95,6 @@ export default function Schedule({
     const [shiftAssignments, setShiftAssignments] = useState<ShiftAssignment[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // normalize to start of day
     startDate.setHours(0, 0, 0, 0);
 
     useEffect(() => {
@@ -109,8 +103,7 @@ export default function Schedule({
         (async () => {
             setLoading(true);
             try {
-                // Use backend service name instead of localhost
-                const res = await fetch(`http://backend:8080/api/${solutionId}`);
+                const res = await fetch(BACKEND_API_ENDPOINTS.job(solutionId));
                 console.log(res);
                 
                 if (!res.ok) throw new Error(`status ${res.status}`);

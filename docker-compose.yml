@@ -11,18 +11,13 @@ services:
       - SPRING_APPLICATION_NAME=employee-scheduler
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/api/employees || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=http://localhost:8080
+        - BACKEND_URL=http://localhost:8080
     ports:
       - "3000:80"
     depends_on:

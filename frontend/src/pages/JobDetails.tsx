@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BACKEND_API_ENDPOINTS } from '../config/api';
 
 type Constraint = { name: string; score: string };
 type Analysis = { score: string; constraints: Constraint[] };
@@ -98,9 +99,9 @@ function JobDetails({ jobId }: { jobId?: string }) {
             setLoading(true);
             try {
                 const [analysisRes, solutionRes, indictmentsRes] = await Promise.all([
-                    fetch(`http://localhost:8080/api/score/${jobId}`),
-                    fetch(`http://localhost:8080/api/${jobId}`),
-                    fetch(`http://localhost:8080/api/indictments/${jobId}`),
+                    fetch(BACKEND_API_ENDPOINTS.jobScore(jobId)),
+                    fetch(BACKEND_API_ENDPOINTS.job(jobId)),
+                    fetch(BACKEND_API_ENDPOINTS.jobIndictments(jobId)),
                 ]);
 
                 async function safeParse(res: Response) {

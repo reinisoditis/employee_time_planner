@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BACKEND_API_ENDPOINTS } from '../config/api'
 
 function Home() {
   const [items, setItems] = useState<string[]>([])
@@ -12,7 +13,7 @@ function Home() {
     setLoading(true)
     setError(null)
     try {
-      const resp = await fetch('http://localhost:8080/api')
+      const resp = await fetch(BACKEND_API_ENDPOINTS.jobs)
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
       const data: string[] = await resp.json()
       setItems(data)
@@ -50,7 +51,7 @@ function Home() {
         return
       }
 
-      const resp = await fetch('http://localhost:8080/api', {
+      const resp = await fetch(BACKEND_API_ENDPOINTS.submitSchedule, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(json),
