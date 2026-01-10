@@ -91,13 +91,19 @@ function JobDetails({ jobId }: { jobId?: string }) {
     const [indictments, setIndictments] = useState<Indictment[] | null>(null);
     const [activePopover, setActivePopover] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!jobId) return;
 
-        (async () => {
-            setLoading(true);
+        let isMounted = true;
+        let intervalId: number | null = null;
+
+        async function fetchData() {
+            if (!isMounted) return;
+            
             try {
+                setError(null);
                 const [analysisRes, solutionRes, indictmentsRes] = await Promise.all([
                     fetch(BACKEND_API_ENDPOINTS.jobScore(jobId)),
                     fetch(BACKEND_API_ENDPOINTS.job(jobId)),
@@ -132,18 +138,48 @@ function JobDetails({ jobId }: { jobId?: string }) {
                     safeParse(indictmentsRes),
                 ]);
 
+                if (!isMounted) return;
+
                 setAnalysis(analysisData ?? { score: "0hard/0soft", constraints: [] });
                 setSolution(solutionData ?? { employees: [], shifts: [], shiftAssignments: [], score: undefined });
                 setIndictments(indictmentsData ?? []);
+
+                // If solver is still active, set up polling
+                if (solutionData?.solverStatus === "SOLVING_ACTIVE") {
+                    if (!intervalId) {
+                        intervalId = window.setInterval(() => fetchData(), 1000);
+                    }
+                } else {
+                    // Solver finished, clear polling
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                        intervalId = null;
+                    }
+                }
             } catch (e: any) {
                 console.error("Fetch error", e);
-                setAnalysis({ score: "0hard/0soft", constraints: [] });
-                setSolution({ employees: [], shifts: [], shiftAssignments: [], score: undefined });
-                setIndictments([]);
+                if (isMounted) {
+                    setError(e.message || "Failed to load data");
+                    setAnalysis({ score: "0hard/0soft", constraints: [] });
+                    setSolution({ employees: [], shifts: [], shiftAssignments: [], score: undefined });
+                    setIndictments([]);
+                }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
-        })();
+        }
+
+        setLoading(true);
+        fetchData();
+
+        return () => {
+            isMounted = false;
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
     }, [jobId]);
 
     const indictmentMap: Record<string, Indictment | undefined> = {};
@@ -158,11 +194,41 @@ function JobDetails({ jobId }: { jobId?: string }) {
         indictments.forEach((ind) => (indictmentMap[ind.indictedObjectID] = ind));
     }
 
-
     if (loading) return <div>Loading...</div>;
+    if (error) return <div style={{ padding: 16, color: "#dc3545" }}>Error: {error}</div>;
+
+    const isSolving = solution?.solverStatus === "SOLVING_ACTIVE";
+    const assignmentCount = solution?.shiftAssignments?.length || 0;
+    const employeeCount = solution?.employees?.length || 0;
 
     return (
         <div style={{ padding: 16 }}>
+            {isSolving && (
+                <div style={{ 
+                    padding: 12, 
+                    marginBottom: 16, 
+                    background: "#ffc107", 
+                    color: "#000", 
+                    borderRadius: 6,
+                    fontWeight: 600 
+                }}>
+                    Solver is running...
+                </div>
+            )}
+
+            {!isSolving && (
+                <div style={{ 
+                    padding: 12, 
+                    marginBottom: 16, 
+                    background: "#198754", 
+                    color: "#fff", 
+                    borderRadius: 6,
+                    fontWeight: 600 
+                }}>
+                    Solver has finished running.
+                </div>    
+            )}
+            
             <div style={{ marginBottom: 12 }}>
                 <span id="score_a" style={{ marginRight: 12, cursor: "pointer" }} onClick={() => setActivePopover(activePopover === "score" ? null : "score")}>
                     <span style={getHardScore(analysis?.score ?? "0hard/0soft") === 0 ? badgeStyles.success : badgeStyles.danger}>Score Breakdown</span>
@@ -171,6 +237,10 @@ function JobDetails({ jobId }: { jobId?: string }) {
                 {activePopover === "score" && analysis && (
                     <div style={{ border: "1px solid #ddd", padding: 8, marginTop: 8, background: "#fff", maxWidth: 520 }} dangerouslySetInnerHTML={{ __html: getScorePopoverContent(analysis.constraints) }} />
                 )}
+            </div>
+
+            <div style={{ marginBottom: 16, color: "#666" }}>
+                {employeeCount} employees · {assignmentCount} shift assignments
             </div>
 
             <div id="employees_container">
@@ -208,15 +278,17 @@ function JobDetails({ jobId }: { jobId?: string }) {
                         const aKey = `assign-${assign.id}`;
                         const aIndict = indictmentMap[assign.id] || indictmentMap[assign.id.toString()];
                         const aBadgeStyle = badgeFromIndict(aIndict);
+                        const employeeName = assign.employee?.name || "Unassigned";
+                        const employeeId = assign.employee?.id || "N/A";
                         return (
                             <div key={assign.id} style={{ marginBottom: 8 }}>
                                 <a style={{ marginRight: 8, textDecoration: "none" }} onClick={() => setActivePopover(activePopover === aKey ? null : aKey)}>
-                                    <span style={aBadgeStyle}>{assign.shift.date} {assign.shift.shiftType} — {assign.employee.name}</span>
+                                    <span style={aBadgeStyle}>{assign.shift.date} {assign.shift.shiftType} — {employeeName}</span>
                                 </a>
                                 {activePopover === aKey && (
                                     <div style={{ border: "1px solid #ddd", padding: 8, marginTop: 6, background: "#fff", maxWidth: 520 }}>
                                         <div>Shift: {assign.shift.id} ({assign.shift.startTime} — {assign.shift.endTime}) Needed employes: {assign.shift.requiredEmployees}</div>
-                                        <div>Employee: {assign.employee.name} ({assign.employee.id})</div>
+                                        <div>Employee: {employeeName} ({employeeId})</div>
                                         <div>Shift type: {assign.shiftType}</div>
                                         <hr />
                                         <div dangerouslySetInnerHTML={{ __html: getEntityPopoverContent(assign.id, indictmentMap) }} />
