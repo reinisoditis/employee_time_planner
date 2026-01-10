@@ -106,14 +106,6 @@ public class ScheduleController {
         return job.schedule;
     }
 
-    private UUID parseJobId(String jobIdStr) {
-        try {
-            return UUID.fromString(jobIdStr);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(BAD_REQUEST, "Invalid jobId: " + jobIdStr, e);
-        }
-    }
-
     private record Job(Schedule schedule, Throwable exception, SolverJob<Schedule, UUID> solverJob) {
         static Job ofSchedule(Schedule schedule) {
             return new Job(schedule, null, null);
