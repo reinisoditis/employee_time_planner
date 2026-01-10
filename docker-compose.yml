@@ -1,29 +1,31 @@
-version: '3.8'
-
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: employee-scheduler-backend
     ports:
       - "8080:8080"
     environment:
       - SPRING_APPLICATION_NAME=employee-scheduler
+      - JAVA_OPTS=-Xmx512m
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 40s
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_BACKEND_URL=http://localhost:8080
+        VITE_BACKEND_URL: http://localhost:8080
+    container_name: employee-scheduler-frontend
     ports:
       - "3000:80"
     depends_on:
@@ -31,6 +33,12 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
 
 networks:
   app-network:

@@ -1,25 +1,25 @@
 # Employee Time Planner
 
-A Java Timefold and Bootstrap employee schedule planner with a simple React frontend, fully containerized with Docker.
+A Java Timefold and Tailwind CSS employee schedule planner with a simple React frontend, fully containerized with Docker.
 
 ## Features
 
 - **Backend**: Spring Boot application with Timefold Solver for constraint-based scheduling
-- **Frontend**: React application with Bootstrap styling
+- **Frontend**: React application with Tailwind CSS styling
 - **Constraint Solving**: Automatically assigns employees to shifts while avoiding conflicts
 - **Dockerized**: Complete Docker setup for easy deployment
 
 ## Architecture
 
 - **Backend**: Java 17 + Spring Boot + Timefold Solver
-- **Frontend**: React 18 + Bootstrap 5
+- **Frontend**: React 19 + Tailwind CSS + Vite
 - **Containerization**: Docker + Docker Compose
 
 ## Prerequisites
 
 - Docker and Docker Compose (for containerized deployment)
 - OR Java 17+ and Maven (for local backend development)
-- OR Node.js 18+ (for local frontend development)
+- OR Node.js 20+ (for local frontend development)
 
 ## Quick Start with Docker
 
@@ -65,10 +65,10 @@ The backend will start on http://localhost:8080
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
-The frontend will start on http://localhost:3000
+The frontend will start on http://localhost:5173
 
 ## Usage
 
@@ -79,14 +79,11 @@ The frontend will start on http://localhost:3000
 
 ## API Endpoints
 
-- `GET /api/employees` - Get all employees
-- `POST /api/employees` - Add a new employee
-- `DELETE /api/employees` - Clear all employees
-- `GET /api/shifts` - Get all shifts
-- `POST /api/shifts` - Add a new shift
-- `DELETE /api/shifts` - Clear all shifts
-- `GET /api/schedule` - Get current schedule
-- `POST /api/solve` - Solve the scheduling problem
+- `GET /api` - Get all jobs
+- `GET /api/{jobId}` - Get a specific job
+- `GET /api/score/{jobId}` - Get score for a job
+- `GET /api/indictments/{jobId}` - Get constraint indictments for a job
+- `POST /api` - Submit a new schedule for solving
 
 ## Constraints
 
@@ -102,15 +99,15 @@ The scheduler implements the following constraints:
 
 ### Backend
 - Spring Boot 3.2.0
-- Timefold Solver 1.5.0
+- Timefold Solver 1.27.0
 - Java 17
 - Maven
 
 ### Frontend
-- React 18.2.0
-- Bootstrap 5.3.2
-- Axios for API calls
-- React Scripts
+- React 19.2.0
+- Tailwind CSS 4.1
+- Vite 7.2
+- TypeScript
 
 ### DevOps
 - Docker
